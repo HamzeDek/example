@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ROLES{
+  superadmin
+  admin
+  user
+}
+
+model attendances {
+  attendanceid Int        @id @default(autoincrement())
+  absent       String
+  present      String
+  createdat    DateTime  @default(now()) @db.Timestamp(6)
+  updatedat    DateTime  @default(now()) @db.Timestamp(6)
+  shift        String
+  startdate    DateTime  @default(now()) @db.Timestamp(6)
+  enddate      DateTime  @default(now()) @db.Timestamp(6)
+  emplooyeeid  Int
+  emplooyee    emplooyee @relation(fields: [emplooyeeid], references: [emplooyeeid], onDelete: NoAction, onUpdate: NoAction, map: "emplooyeeid")
+}
+
+model countries {
+  countryid Int         @id @default(autoincrement())
+  country   String
+  createdat DateTime   @default(now()) @db.Timestamp(6)
+  updatedat DateTime   @default(now()) @db.Timestamp(6)
+  regionid  Int
+  regions   regions    @relation(fields: [regionid], references: [regionid], onDelete: NoAction, onUpdate: NoAction, map: "regionid")
+  locations locations[]
+}
+
+model department {
+  departmentid   Int          @id @default(autoincrement())
+  departmentname String
+  createdat      DateTime    @default(now()) @db.Timestamp(6)
+  updatedat      DateTime    @default(now()) @db.Timestamp(6)
+  emplooyee      emplooyee[]
+  jobhistory     jobhistory[]
+}
+
+model emplooyee {
+  emplooyeeid  Int           @id @default(autoincrement())
+  firstname    String
+  lastname     String
+  email        String       @unique
+  phone        String
+  dob          DateTime     @db.Date
+  commisition  Int
+  createdat    DateTime     @default(now()) @db.Timestamp(6)
+  updatedat    DateTime     @default(now()) @db.Timestamp(6)
+  departmentid Int
+  managerid    Int
+  attendances  attendances[]
+  department   department   @relation(fields: [departmentid], references: [departmentid], onDelete: NoAction, onUpdate: NoAction, map: "departmentid")
+  manager      manager      @relation(fields: [managerid], references: [managerid], onDelete: NoAction, onUpdate: NoAction, map: "managerid")
+  jobhistory   jobhistory[]
+}
+
+model jobhistory {
+  jobhistoryid Int         @id @default(autoincrement())
+  startdate    DateTime   @default(now()) @db.Timestamp(6)
+  enddate      DateTime   @default(now()) @db.Timestamp(6)
+  createdat    DateTime   @default(now()) @db.Timestamp(6)
+  updatedat    DateTime   @default(now()) @db.Timestamp(6)
+  emplooyeeid  Int
+  departmentid Int
+  jobid        Int
+  department   department @relation(fields: [departmentid], references: [departmentid], onDelete: NoAction, onUpdate: NoAction, map: "departmentid")
+  emplooyee    emplooyee  @relation(fields: [emplooyeeid], references: [emplooyeeid], onDelete: NoAction, onUpdate: NoAction, map: "emplooyeeid")
+  jobs         jobs       @relation(fields: [jobid], references: [jobid], onDelete: NoAction, onUpdate: NoAction, map: "jobid")
+}
+
+model jobs {
+  jobid      Int          @id @default(autoincrement())
+  jobtitle   String
+  minsalary  Int
+  maxsalary  Int
+  createdat  DateTime    @default(now()) @db.Timestamp(6)
+  updatedat  DateTime    @default(now()) @db.Timestamp(6)
+  jobhistory jobhistory[]
+}
+
+model locations {
+  locationid Int        @id @default(autoincrement())
+  address    String
+  state      String
+  postcode   Int
+  countryid  Int
+  createdat  DateTime  @default(now()) @db.Timestamp(6)
+  updatedat  DateTime  @default(now()) @db.Timestamp(6)
+  countries  countries @relation(fields: [countryid], references: [countryid], onDelete: NoAction, onUpdate: NoAction, map: "countryid")
+}
+
+model manager {
+  managerid      Int         @id @default(autoincrement())
+  managername    String
+  manageraddress String
+  managerphone   String
+  createdat      DateTime   @default(now()) @db.Timestamp(6)
+  updatedat      DateTime   @default(now()) @db.Timestamp(6)
+  emplooyee      emplooyee[]
+}
+
+model regions {
+  regionid  Int         @id @default(autoincrement())
+  region    String
+  createdat DateTime   @default(now()) @db.Timestamp(6)
+  updatedat DateTime   @default(now()) @db.Timestamp(6)
+  countries countries[]
+}
+
+model users {
+  userid  Int       @id @default(autoincrement())
+  email    String   @unique
+  password String
+  joinedat DateTime @default(now()) @db.Timestamp(6)
+  role ROLES @default(user)
+}

@@ -1,0 +1,32 @@
+const express = require('express')
+const app = express();
+const dotenv = require('dotenv')
+const cors = require('cors')
+dotenv.config();
+// const port = process.env.PORTNUM || 3000;
+const port = 3000 && 9000
+app.use(cors())
+app.use(express.json())
+const userRoute = require('../routes/userRoute')
+const regionsRoute = require('../routes/regionsRoute')
+const managerRoute = require('../routes/managerRoute')
+const locationRoute = require('../routes/locationRoute')
+const attendanceRoute= require('../routes/attendanceRoute')
+const CountriesRoute = require('../routes/countriesRoute')
+const departmentRoute = require('../routes/departmentRoute')
+const jobsRoute = require('../routes/jobsRoute')
+const jobHistoryRoute = require('../routes/jobHistoryRoute')
+const EmplooyeeRoute = require('../routes/emplooyeeRoute')
+app.use('/api/users',userRoute)
+app.use('/api/countries',CountriesRoute)
+app.use('/api/managers',managerRoute)
+app.use('/api/locations',locationRoute)
+app.use('/api/departments',departmentRoute)
+app.use('/api/attendance',attendanceRoute)
+app.use(jobsRoute)
+app.use(regionsRoute)
+app.use('/api/jobHistory',jobHistoryRoute)
+app.use('/api/emplooyee',EmplooyeeRoute)
+    app.listen(port,()=>{
+    console.log(`http://localhost:${port}`)
+})
